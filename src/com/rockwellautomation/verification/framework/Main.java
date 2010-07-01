@@ -138,6 +138,15 @@ public class Main {
 			 (currentBranches >= branches) )
 			return;
 		
+		int randDepth = rand.nextInt(depth);
+		int randBranches = rand.nextInt(branches);
+		
+		// Do a bit of random-ness to ensure that not
+		// all nodes are equal in size.
+		if ( (currentDepth > randDepth) ||
+			 (currentBranches > randBranches) )
+			return;
+		
 		// Create a new builder for the child
 		Element.Builder child = Element.newBuilder();
 		
