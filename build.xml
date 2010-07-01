@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!DOCTYPE project>
+<project name="test-framework" default="generate" basedir=".">
+    <property name="jar.name" value="${ant.project.name}.jar" />
+    <property name="lib.dir" value="${basedir}/lib"/>
+    <property name="bin.dir" value="${basedir}/bin"/>
+    <property name="out.dir" value="${basedir}/out"/>
+    <property name="build.dir" value="${basedir}/build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="src.dir" value="${basedir}/src"/>
+    <property name="javac.debug" value="true" />
+    <property name="javac.debuglevel" value="lines,vars,source" />
+    <property name="protoc" value="${lib.dir}/win32/protoc"/>
+    <property name="proto.file" value="${basedir}/performance.proto"/>
+	<property name="max" value="100"/>
+	<property name="operations" value="10"/>
+	<property name="depth" value="5"/>
+	<property name="branches" value="5"/>
+
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+    
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac includeAntRuntime="false"
+            srcdir="${src.dir}" 
+            classpathref="classpath"
+            destdir="${classes.dir}"
+            verbose="false"
+            failonerror="true"
+            debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}">
+            <compilerarg value="-Xlint:-path" />
+            <compilerarg value="-Werror" /> 
+        </javac>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${out.dir}" />
+        <jar destfile="${out.dir}/${jar.name}"
+            basedir="${classes.dir}"
+            includes="**/*.class"/>
+    </target>
+	
+	<target name="generate" depends="jar">
+		<mkdir dir="${out.dir}"/>
+		<java classname="com.rockwellautomation.verification.framework.Main"
+			classpath="${out.dir}/${ant.project.name}.jar"
+		    classpathref="classpath">
+            <jvmarg value="-Xmx512m"/>
+			<arg value="${max}"/>
+			<arg value="${operations}"/>
+            <arg value="${depth}"/>
+            <arg value="${branches}"/>
+		</java>
+    </target>
+
+    <target name="clean">
+        <delete dir="${build.dir}" />
+        <delete dir="${out.dir}" />
+    </target>
+    
+</project>
