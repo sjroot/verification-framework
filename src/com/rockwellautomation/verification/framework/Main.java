@@ -161,7 +161,7 @@ public class Main {
 				child.setExtension(Element.booleanValue, rand.nextBoolean());
 				break;
 			case NUMBER:
-				child.setExtension(Element.numericValue, rand.nextLong());
+				child.setExtension(Element.numericValue, rand.nextInt());
 				break;
 			default:
 				String value = getDictionaryValue();
