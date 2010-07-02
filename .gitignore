@@ -1,3 +1,6 @@
 /lib/verification-message.jar
 /.settings
 /.classpath
+/out
+/build
+/bin

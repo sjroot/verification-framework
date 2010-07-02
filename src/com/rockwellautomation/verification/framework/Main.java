@@ -9,6 +9,7 @@ import com.rockwellautomation.verification.Performance.Element;
 import com.rockwellautomation.verification.Performance.ElementType;
 import com.rockwellautomation.verification.Performance.Operation;
 import com.rockwellautomation.verification.Performance.OperationType;
+import com.rockwellautomation.verification.Performance.Operations;
 
 /**
  * This class is used to launch the test data generation process
@@ -201,7 +202,7 @@ public class Main {
 		}
 		
 		try {
-			Operation.Builder builder = Operation.newBuilder();
+			Operations.Builder builder = Operations.newBuilder();
 		
 			// Walk the pre-determine number of operations and populate the
 			// information.
@@ -227,7 +228,7 @@ public class Main {
 			// Write the main operation to the output file
 			String file = "out" + File.separator + "operations.dat";
 			out = new FileOutputStream(file);
-			Operation o = builder.build();
+			Operations o = builder.build();
 			o.writeTo(out);
 			System.out.println("Created " + i + " opertaions:");
 			System.out.println(o);
