@@ -1,0 +1,26 @@
+This project is used to generate the test data for both the C++ and Java tests.
+
+In order to build, ant is required.  Use the following command to build and generate test data:
+
+ant
+
+The result of the build will be contained in the newly created out directory.  This directory will contain a JAR of the compiled code, a operations.dat (list of operations to be performed), and testdata.dat (the data to perform the operations on).
+
+There are several parameters that can be changed in order to generate different data sets.  They are as follows:
+
+max - The maximum number of data elements to be created
+operations - The maximum number of operations to be created
+depth - The maximum number of levels deep that data should be 
+branches - The maximum number of branches should be created per node
+
+In order to supply these paramters to ant, use the following syntax:
+
+ant -Dmax=<...> -Doperations=<...> -Ddepth=<...> -Dbranches=<...>
+
+If values are not supplied, the following defaults will be used:
+
+max - 100
+operations - 10
+depth - 5
+branches - 5
+
