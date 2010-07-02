@@ -1,5 +1,7 @@
 This project is used to generate the test data for both the C++ and Java tests.
 
+This project depends on the verification-message project in order to generate the test data.
+
 In order to build, ant is required.  Use the following command to build and generate test data:
 
 ant
