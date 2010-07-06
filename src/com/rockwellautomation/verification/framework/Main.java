@@ -114,8 +114,6 @@ public class Main {
 		try {
 			// Create the root builder and add elements to it
 			Element.Builder root = Element.newBuilder();
-			// TODO the root has to have data - make this more random
-			root.setExtension(Element.stringValue, "ROOT!!");
 			while (total < max)
 			    createElement(root, -1, -1);
 			
