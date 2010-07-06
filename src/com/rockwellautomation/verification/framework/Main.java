@@ -166,10 +166,7 @@ public class Main {
 				child.setExtension(Element.numericValue, rand.nextInt());
 				break;
 			default:
-				String value = getDictionaryValue();
-				if (value == null)
-					value = DictionaryType.NULL.name();
-				child.setExtension(Element.stringValue, value);
+				child.setExtension(Element.stringValue, getDictionaryValue());
 		}
 		
 		// Increment the counters
@@ -217,11 +214,8 @@ public class Main {
 				
 				// Add the information to the builder
 				b.setOperationType(type);
-				if (type == OperationType.SEARCH) {
-					String search = getDictionaryValue();
-					if (search != null)
-					    b.setSearch(search);
-				}
+				if (type == OperationType.SEARCH)
+					b.setSearch(getDictionaryValue());
 				
 				// Add the operation to the parent
 				builder.addOperations(b.build());
@@ -245,10 +239,6 @@ public class Main {
 	 * @return
 	 */
 	private static String getDictionaryValue() {
-		DictionaryType dict = dictionaryTypes[rand.nextInt(dictionaryTypes.length)];
-		// If the enum has a name of NULL, then return a null string
-		if (dict == DictionaryType.NULL)
-			return null;
-		return dict.name();
+		return dictionaryTypes[rand.nextInt(dictionaryTypes.length)].name();
 	}
 }
