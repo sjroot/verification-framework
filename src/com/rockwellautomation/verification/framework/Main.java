@@ -99,6 +99,8 @@ public class Main {
 			throw new IllegalArgumentException("The supplied maximum depth of data is not valid!");
 		
 		depth = Integer.parseInt(tmp);
+		if (depth > max)
+			depth = max;
 		System.out.println("Using maximum data depth value of " + depth);
 		
 		// Get the maximum elements per branch
@@ -108,6 +110,8 @@ public class Main {
 			throw new IllegalArgumentException("The supplied maximum number of elements per brach is not valid!");
 		
 		branches = Integer.parseInt(tmp);
+		if (branches > max)
+			branches = max;
 		System.out.println("Using maximum branches per element value of " + branches);
 	}
 	
@@ -297,7 +301,6 @@ public class Main {
 		System.out.println("Total # of data elements generated: " + total);
 		System.out.println("\tMax Depth: " + max(depthData));
 		System.out.println("\tMax Branches: " + max(branchData));
-		
 		Double averageDepth = calculateAverage(depthData);
 		Double averageBranches = calculateAverage(branchData);
 		NumberFormat f = NumberFormat.getInstance();
