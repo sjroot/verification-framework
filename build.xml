@@ -49,7 +49,7 @@
 		<java classname="com.rockwellautomation.verification.framework.Main"
 			classpath="${out.dir}/${ant.project.name}.jar"
 		    classpathref="classpath">
-            <jvmarg value="-Xmx512m"/>
+            <jvmarg value="-Xmx1024m"/>
 			<arg value="${max}"/>
 			<arg value="${operations}"/>
             <arg value="${depth}"/>

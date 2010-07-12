@@ -2,6 +2,7 @@ package com.rockwellautomation.verification.framework;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -307,34 +308,37 @@ public class Main {
 	/**
 	 * This method will report stats about the generated data set
 	 */
-	private void reportStats() {
-		System.out.println("Total # of operations generated: " + operations);
+	private void reportStats() throws Exception {
+		PrintStream out = new PrintStream(new FileOutputStream("out" + File.separator + "stats.txt"));
+		out.println("Total # of operations generated: " + operations);
 		
 		for (OperationType t : operationTypes) {
 			Integer counter = operationData.get(t);
 			if (counter == null)
 				counter = 0;
-			System.out.println("\t# of " + t.name() + " operations: " + counter);
+			out.println("\t# of " + t.name() + " operations: " + counter);
 		}
 		
-		System.out.println("Total # of data elements generated: " + total);
-		System.out.println("\tMax Depth: " + maximumValue(depthData));
-		System.out.println("\tMax Branches: " + maximumValue(branchData));
+		out.println("Total # of data elements generated: " + total);
+		out.println("\tMax Depth: " + maximumValue(depthData));
+		out.println("\tMax Branches: " + maximumValue(branchData));
 		Double averageDepth = calculateAverage(depthData);
 		Double averageBranches = calculateAverage(branchData);
 		NumberFormat f = NumberFormat.getInstance();
 		f.setMaximumFractionDigits(2);
 		f.setGroupingUsed(false);
 		
-		System.out.println("\tAverage Depth: " + f.format(averageDepth));
-		System.out.println("\tAverage Branches: " + f.format(averageBranches));
+		out.println("\tAverage Depth: " + f.format(averageDepth));
+		out.println("\tAverage Branches: " + f.format(averageBranches));
 		
 		for (ElementType t : elementTypes) {
 			Integer counter = elementData.get(t);
 			if (counter == null)
 				counter = 0;
-			System.out.println("\t# of " + t + " elements: " + counter);
+			out.println("\t# of " + t + " elements: " + counter);
 		}
+		
+		out.close();
 	}
 	
 	/**
