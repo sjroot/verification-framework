@@ -30,6 +30,7 @@ public class Main {
 	private static int depth;
 	private static int branches;
 	private static int total;
+	private static boolean print;
 	private static OperationType[] operationTypes = OperationType.values();
 	private static DictionaryType[] dictionaryTypes = DictionaryType.values();
 	private static ElementType[] elementTypes = ElementType.values();
@@ -99,8 +100,6 @@ public class Main {
 			throw new IllegalArgumentException("The supplied maximum depth of data is not valid!");
 		
 		depth = Integer.parseInt(tmp);
-		if (depth > max)
-			depth = max;
 		System.out.println("Using maximum data depth value of " + depth);
 		
 		// Get the maximum elements per branch
@@ -110,9 +109,11 @@ public class Main {
 			throw new IllegalArgumentException("The supplied maximum number of elements per brach is not valid!");
 		
 		branches = Integer.parseInt(tmp);
-		if (branches > max)
-			branches = max;
 		System.out.println("Using maximum branches per element value of " + branches);
+		
+		if (args.length >= 4)
+			print = Boolean.parseBoolean(args[4]);
+		System.out.println("The data set will be printed to stdout? : " + print);
 	}
 	
 	/**
@@ -140,8 +141,10 @@ public class Main {
 			Element e = root.build();
 			e.writeTo(out);
 			
-			System.out.println("Created " + total + " elements: ");
-			System.out.println(e);
+			if (print) {
+				System.out.println("Created " + total + " elements: ");
+				System.out.println(e);
+			}
 		}
 		finally {
 			try { if (out != null) out.close(); } catch (Exception ignore) { ignore.printStackTrace(); }
@@ -269,8 +272,11 @@ public class Main {
 			out = new FileOutputStream(file);
 			Operations o = builder.build();
 			o.writeTo(out);
-			System.out.println("Created " + i + " opertaions:");
-			System.out.println(o);
+			
+			if (print) {
+				System.out.println("Created " + i + " opertaions:");
+				System.out.println(o);
+			}
 		}
 		finally {
 			try { if (out != null) out.close(); } catch (Exception ignore) { ignore.printStackTrace(); }

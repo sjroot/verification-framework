@@ -16,6 +16,7 @@
 	<property name="operations" value="10"/>
 	<property name="depth" value="5"/>
 	<property name="branches" value="5"/>
+	<property name="print" value="false"/>
 
     <path id="classpath">
         <fileset dir="${lib.dir}" includes="**/*.jar"/>
@@ -53,6 +54,7 @@
 			<arg value="${operations}"/>
             <arg value="${depth}"/>
             <arg value="${branches}"/>
+			<arg value="${print}"/>
 		</java>
     </target>
 
