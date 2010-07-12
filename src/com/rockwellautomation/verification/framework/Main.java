@@ -2,6 +2,7 @@ package com.rockwellautomation.verification.framework;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,6 +39,7 @@ public class Main {
 	private static List<Integer> branchData = new ArrayList<Integer>();
 	private static Map<OperationType, Integer> operationData = new HashMap<OperationType, Integer>();
 	private static Map<ElementType, Integer> elementData = new HashMap<ElementType, Integer>();
+	private Counter counterData = new Counter();
 	
 	/**
 	 * Main entry point of the program
@@ -45,18 +47,20 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		
+		Main main = new Main();
+		
 		// Process the supplied arguments
-		processArgs(args);
+		main.processArgs(args);
 
 		try {
 		    // Create the operations
-		    createOperations();
+		    main.createOperations();
 		    
 		    // Create the data
-			createData();
+			main.createData();
 			
 			// Generate stats about the data
-			reportStats();
+			main.reportStats();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
@@ -67,7 +71,7 @@ public class Main {
 	 * This method will process the program arguments
 	 * @param args
 	 */
-	private static void processArgs(String[] args) {
+	private void processArgs(String[] args) {
 		if ( (args == null) ||
 			 (args.length < 4) )
 			throw new IllegalArgumentException("A # of data elements, # of operations, max depth of data, and max elements per branch values are required!");
@@ -120,7 +124,7 @@ public class Main {
 	 * This method will create the test data
 	 * @throws Exception
 	 */
-	private static void createData() throws Exception {
+	private void createData() throws Exception {
 		FileOutputStream out = null;
 		
 		// Make sure that data should be created
@@ -132,8 +136,11 @@ public class Main {
 		try {
 			// Create the root builder and add elements to it
 			Element.Builder root = Element.newBuilder();
-			while (total < max)
-			    createElement(root, -1, -1);
+			while (total < max) {
+				this.counterData = new Counter();
+			    createElement(root);
+			    this.captureBranchesAndDepth();
+			}
 			
 			// Write the data to the output file
 			String file = "out" + File.separator + "testdata.dat";
@@ -153,15 +160,16 @@ public class Main {
 		System.out.println(total + " elements were created");
 	}
 	
-	private static void createElement(Element.Builder parent, int currentDepth, int currentBranches) {
+	private void createElement(Element.Builder parent) {
 		if ( (total >= max) ||
-			 (currentDepth >= depth) ||
-			 (currentBranches >= branches) ) {
-			// Capture stats about the generated data
-			if (currentDepth >= depth)
-				depthData.add(depth);
-			if (currentBranches >= branches)
-				branchData.add(branches);
+			 (counterData.getDepth() > depth) ||
+			 (counterData.getBranches() > branches) ) {
+			if ( (counterData.getDepth() > 0) &&
+				 (counterData.getDepth() > depth) )
+				counterData.decrementDepth();
+			if ( (counterData.getBranches() > 0) &&
+				 (counterData.getBranches() > branches) )
+				counterData.decrementBranches();
 			return;
 		}
 		
@@ -170,13 +178,14 @@ public class Main {
 		
 		// Do a bit of random-ness to ensure that not
 		// all nodes are equal in size.
-		if ( (currentDepth > randDepth) ||
-			 (currentBranches > randBranches) ) {
-			// Capture stats about the generated data
-			if (currentDepth > randDepth)
-			    depthData.add(currentDepth);
-			if (currentBranches > randBranches)
-			    branchData.add(currentBranches);
+		if ( (counterData.getDepth() > randDepth) ||
+			 (counterData.getBranches() > randBranches) ) {
+			if ( (counterData.getDepth() > 0) &&
+				 (counterData.getDepth() > randDepth) )
+				counterData.decrementDepth();
+			if ( (counterData.getBranches() > 0) &&
+				 (counterData.getBranches() > randBranches) )
+				counterData.decrementBranches();
 			return;
 		}
 		
@@ -215,10 +224,14 @@ public class Main {
 		boolean sibling = rand.nextBoolean();
 		
 		// Determine if more children should be added
-		if (!sibling)
-			createElement(child, currentDepth + 1, currentBranches);
-		else
-			createElement(parent, currentDepth, currentBranches + 1);
+		if (!sibling) {
+			counterData.incrementDepth();
+			createElement(child);
+		}
+		else {
+			counterData.incrementBranches();
+			createElement(parent);
+		}
 		
 		// Add the child to the parent and increment the total
 		parent.addChildren(child);
@@ -229,7 +242,7 @@ public class Main {
 	 * on the test data.
 	 * @throws Exception
 	 */
-	private static void createOperations() throws Exception {
+	private void createOperations() throws Exception {
 		FileOutputStream out = null;
 		
 		// Make sure that operations should be created
@@ -287,14 +300,14 @@ public class Main {
 	 * This method will get the string name of the word from the dictionary.
 	 * @return
 	 */
-	private static String getDictionaryValue() {
+	private String getDictionaryValue() {
 		return dictionaryTypes[rand.nextInt(dictionaryTypes.length)].name();
 	}
 	
 	/**
 	 * This method will report stats about the generated data set
 	 */
-	private static void reportStats() {
+	private void reportStats() {
 		System.out.println("Total # of operations generated: " + operations);
 		
 		for (OperationType t : operationTypes) {
@@ -305,12 +318,13 @@ public class Main {
 		}
 		
 		System.out.println("Total # of data elements generated: " + total);
-		System.out.println("\tMax Depth: " + max(depthData));
-		System.out.println("\tMax Branches: " + max(branchData));
+		System.out.println("\tMax Depth: " + maximumValue(depthData));
+		System.out.println("\tMax Branches: " + maximumValue(branchData));
 		Double averageDepth = calculateAverage(depthData);
 		Double averageBranches = calculateAverage(branchData);
 		NumberFormat f = NumberFormat.getInstance();
 		f.setMaximumFractionDigits(2);
+		f.setGroupingUsed(false);
 		
 		System.out.println("\tAverage Depth: " + f.format(averageDepth));
 		System.out.println("\tAverage Branches: " + f.format(averageBranches));
@@ -329,7 +343,7 @@ public class Main {
 	 * @param l The List of Integer objects
 	 * @return The calculated average
 	 */
-	private static double calculateAverage(List<Integer> l) {
+	private double calculateAverage(List<Integer> l) {
 		if ( (l == null) ||
 			 (l.size() == 0) )
 			return 0;
@@ -347,11 +361,31 @@ public class Main {
 	 * @param l A List of Integer objects
 	 * @return The max from the supplied list
 	 */
-	private static int max(List<Integer> l) {
+	private int maximumValue(List<Integer> l) {
 		if ( (l == null) ||
 			 (l.size() == 0) )
 			return 0;
 		Collections.sort(l);
 		return l.get(l.size() - 1);
+	}
+	
+	private void captureBranchesAndDepth() {
+		if (counterData.getDepth() > 0)
+		    depthData.add(counterData.getDepth());
+		if (counterData.getBranches() > 0)
+		    branchData.add(counterData.getBranches());
+	}
+	
+	public class Counter implements Serializable {
+		private static final long serialVersionUID = 383764637309954294L;
+		private int depth;
+		private int branches;
+		
+		public void incrementDepth() { this.depth++; }
+		public void decrementDepth() { this.depth--; }
+		public void incrementBranches() { this.branches++; }
+		public void decrementBranches() { this.branches--; }
+		public int getDepth() { return depth; }
+		public int getBranches() { return branches; }
 	}
 }
