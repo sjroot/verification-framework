@@ -2,6 +2,12 @@ package com.rockwellautomation.verification.framework;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import com.rockwellautomation.verification.Performance.DictionaryType;
@@ -27,6 +33,10 @@ public class Main {
 	private static OperationType[] operationTypes = OperationType.values();
 	private static DictionaryType[] dictionaryTypes = DictionaryType.values();
 	private static ElementType[] elementTypes = ElementType.values();
+	private static List<Integer> depthData = new ArrayList<Integer>();
+	private static List<Integer> branchData = new ArrayList<Integer>();
+	private static Map<OperationType, Integer> operationData = new HashMap<OperationType, Integer>();
+	private static Map<ElementType, Integer> elementData = new HashMap<ElementType, Integer>();
 	
 	/**
 	 * Main entry point of the program
@@ -43,6 +53,9 @@ public class Main {
 		    
 		    // Create the data
 			createData();
+			
+			// Generate stats about the data
+			reportStats();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
@@ -136,8 +149,14 @@ public class Main {
 	private static void createElement(Element.Builder parent, int currentDepth, int currentBranches) {
 		if ( (total >= max) ||
 			 (currentDepth >= depth) ||
-			 (currentBranches >= branches) )
+			 (currentBranches >= branches) ) {
+			// Capture stats about the generated data
+			if (currentDepth >= depth)
+				depthData.add(depth);
+			if (currentBranches >= branches)
+				branchData.add(branches);
 			return;
+		}
 		
 		int randDepth = rand.nextInt(depth);
 		int randBranches = rand.nextInt(branches);
@@ -145,8 +164,14 @@ public class Main {
 		// Do a bit of random-ness to ensure that not
 		// all nodes are equal in size.
 		if ( (currentDepth > randDepth) ||
-			 (currentBranches > randBranches) )
+			 (currentBranches > randBranches) ) {
+			// Capture stats about the generated data
+			if (currentDepth > randDepth)
+			    depthData.add(currentDepth);
+			if (currentBranches > randBranches)
+			    branchData.add(currentBranches);
 			return;
+		}
 		
 		// Create a new builder for the child
 		Element.Builder child = Element.newBuilder();
@@ -166,6 +191,14 @@ public class Main {
 			default:
 				child.setExtension(Element.stringValue, getDictionaryValue());
 		}
+		
+		// Capture stats about the generated data
+		Integer counter = elementData.get(type);
+		if (counter != null)
+			counter++;
+		else
+			counter = 1;
+		elementData.put(type, counter);
 		
 		// Increment the counters
 		total++;
@@ -217,6 +250,14 @@ public class Main {
 				
 				// Add the operation to the parent
 				builder.addOperations(b.build());
+				
+				// Capture stats about the generated operations
+				Integer counter = operationData.get(type);
+				if (counter != null)
+					counter++;
+				else
+					counter = 1;
+				operationData.put(type, counter);
 			}
 			
 			// Write the main operation to the output file
@@ -238,5 +279,70 @@ public class Main {
 	 */
 	private static String getDictionaryValue() {
 		return dictionaryTypes[rand.nextInt(dictionaryTypes.length)].name();
+	}
+	
+	/**
+	 * This method will report stats about the generated data set
+	 */
+	private static void reportStats() {
+		System.out.println("Total # of operations generated: " + operations);
+		
+		for (OperationType t : operationTypes) {
+			Integer counter = operationData.get(t);
+			if (counter == null)
+				counter = 0;
+			System.out.println("\t# of " + t.name() + " operations: " + counter);
+		}
+		
+		System.out.println("Total # of data elements generated: " + total);
+		System.out.println("\tMax Depth: " + max(depthData));
+		System.out.println("\tMax Branches: " + max(branchData));
+		
+		Double averageDepth = calculateAverage(depthData);
+		Double averageBranches = calculateAverage(branchData);
+		NumberFormat f = NumberFormat.getInstance();
+		f.setMaximumFractionDigits(2);
+		
+		System.out.println("\tAverage Depth: " + f.format(averageDepth));
+		System.out.println("\tAverage Branches: " + f.format(averageBranches));
+		
+		for (ElementType t : elementTypes) {
+			Integer counter = elementData.get(t);
+			if (counter == null)
+				counter = 0;
+			System.out.println("\t# of " + t + " elements: " + counter);
+		}
+	}
+	
+	/**
+	 * This method is used to calculate the average of the supplied list of
+	 * Integer objects.
+	 * @param l The List of Integer objects
+	 * @return The calculated average
+	 */
+	private static double calculateAverage(List<Integer> l) {
+		if ( (l == null) ||
+			 (l.size() == 0) )
+			return 0;
+		int size = l.size();
+		int total = 0;
+		for (Integer i : l) {
+			if (i != null)
+				total += i;
+		}
+		return (double)(total / size);
+	}
+	
+	/**
+	 * This method will return the maximum value from the supplied list
+	 * @param l A List of Integer objects
+	 * @return The max from the supplied list
+	 */
+	private static int max(List<Integer> l) {
+		if ( (l == null) ||
+			 (l.size() == 0) )
+			return 0;
+		Collections.sort(l);
+		return l.get(l.size() - 1);
 	}
 }
