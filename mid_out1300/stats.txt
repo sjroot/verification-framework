@@ -1,0 +1,15 @@
+Total # of operations generated: 130
+	# of INCREMENT operations: 26
+	# of DECREMENT operations: 17
+	# of SEARCH operations: 22
+	# of SIZE operations: 17
+	# of SUM operations: 21
+	# of AVERAGE operations: 27
+Total # of data elements generated: 1300
+	Max Depth: 40
+	Max Branches: 36
+	Average Depth: 20.97
+	Average Branches: 18.06
+	# of STRING elements: 451
+	# of NUMBER elements: 416
+	# of BOOLEAN elements: 433
