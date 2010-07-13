@@ -357,7 +357,7 @@ public class Main {
 			if (i != null)
 				total += i;
 		}
-		return (double)(total / size);
+		return (double)((double)total / (double)size);
 	}
 	
 	/**
