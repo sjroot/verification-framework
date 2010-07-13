@@ -1,15 +1,15 @@
 Total # of operations generated: 6100
-	# of INCREMENT operations: 1055
-	# of DECREMENT operations: 1000
-	# of SEARCH operations: 976
-	# of SIZE operations: 970
-	# of SUM operations: 1068
-	# of AVERAGE operations: 1031
+	# of INCREMENT operations: 1000
+	# of DECREMENT operations: 1020
+	# of SEARCH operations: 1033
+	# of SIZE operations: 987
+	# of SUM operations: 1010
+	# of AVERAGE operations: 1050
 Total # of data elements generated: 61000
-	Max Depth: 313
-	Max Branches: 335
-	Average Depth: 104.38
-	Average Branches: 104.97
-	# of STRING elements: 20107
-	# of NUMBER elements: 20556
-	# of BOOLEAN elements: 20337
+	Max Depth: 325
+	Max Branches: 326
+	Average Depth: 110.82
+	Average Branches: 110.8
+	# of STRING elements: 20405
+	# of NUMBER elements: 20248
+	# of BOOLEAN elements: 20347
